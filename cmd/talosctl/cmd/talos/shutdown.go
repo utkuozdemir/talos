@@ -7,6 +7,7 @@ package talos
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -14,7 +15,9 @@ import (
 )
 
 var shutdownCmdFlags struct {
-	force bool
+	force  bool
+	noWait bool
+	debug  bool
 }
 
 // shutdownCmd represents the shutdown command.
@@ -24,17 +27,49 @@ var shutdownCmd = &cobra.Command{
 	Long:  ``,
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return WithClient(func(ctx context.Context, c *client.Client) error {
-			if err := c.Shutdown(ctx, client.WithShutdownForce(shutdownCmdFlags.force)); err != nil {
-				return fmt.Errorf("error executing shutdown: %s", err)
-			}
+		if shutdownCmdFlags.debug {
+			shutdownCmdFlags.noWait = false
+		}
 
-			return nil
-		})
+		opts := []client.ShutdownOption{
+			client.WithShutdownForce(shutdownCmdFlags.force),
+		}
+
+		if shutdownCmdFlags.noWait {
+			return WithClient(func(ctx context.Context, c *client.Client) error {
+				if err := c.Shutdown(ctx, opts...); err != nil {
+					return fmt.Errorf("error executing shutdown: %s", err)
+				}
+
+				return nil
+			})
+		}
+
+		err := newActionTracker(stopAllServicesEventFn, shutdownGetActorID, nil, shutdownCmdFlags.debug).run()
+		if err != nil {
+			os.Exit(1)
+		}
+
+		return err
 	},
+}
+
+func shutdownGetActorID(ctx context.Context, c *client.Client) (string, error) {
+	resp, err := c.ShutdownWithResponse(ctx, client.WithShutdownForce(shutdownCmdFlags.force))
+	if err != nil {
+		return "", err
+	}
+
+	if len(resp.GetMessages()) == 0 {
+		return "", fmt.Errorf("no messages returned from action run")
+	}
+
+	return resp.GetMessages()[0].GetActorId(), nil
 }
 
 func init() {
 	shutdownCmd.Flags().BoolVar(&shutdownCmdFlags.force, "force", false, "if true, force a node to shutdown without a cordon/drain")
+	shutdownCmd.Flags().BoolVar(&shutdownCmdFlags.noWait, "no-wait", false, "do not wait for the operation to complete, return immediately. always set to false when --debug is set")
+	shutdownCmd.Flags().BoolVar(&shutdownCmdFlags.debug, "debug", false, "debug operation from kernel logs. --no-wait is set to false when this flag is set")
 	addCommand(shutdownCmd)
 }

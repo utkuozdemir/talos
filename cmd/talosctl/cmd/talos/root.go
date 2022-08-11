@@ -45,7 +45,7 @@ const pathAutoCompleteLimit = 500
 // WithClientNoNodes wraps common code to initialize Talos client and provide cancellable context.
 //
 // WithClientNoNodes doesn't set any node information on the request context.
-func WithClientNoNodes(action func(context.Context, *client.Client) error) error {
+func WithClientNoNodes(action func(context.Context, *client.Client) error, dialOptions ...grpc.DialOption) error {
 	return cli.WithContext(
 		context.Background(), func(ctx context.Context) error {
 			cfg, err := clientconfig.Open(Talosconfig)
@@ -55,6 +55,7 @@ func WithClientNoNodes(action func(context.Context, *client.Client) error) error
 
 			opts := []client.OptionFunc{
 				client.WithConfig(cfg),
+				client.WithGRPCDialOptions(dialOptions...),
 			}
 
 			if Cmdcontext != "" {
@@ -85,7 +86,7 @@ func WithClientNoNodes(action func(context.Context, *client.Client) error) error
 var errConfigContext = fmt.Errorf("failed to resolve config context")
 
 // WithClient builds upon WithClientNoNodes to provide set of nodes on request context based on config & flags.
-func WithClient(action func(context.Context, *client.Client) error) error {
+func WithClient(action func(context.Context, *client.Client) error, dialOptions ...grpc.DialOption) error {
 	return WithClientNoNodes(
 		func(ctx context.Context, c *client.Client) error {
 			if len(Nodes) < 1 {
@@ -105,6 +106,7 @@ func WithClient(action func(context.Context, *client.Client) error) error {
 
 			return action(ctx, c)
 		},
+		dialOptions...,
 	)
 }
 

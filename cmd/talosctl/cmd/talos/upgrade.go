@@ -19,11 +19,14 @@ import (
 	"github.com/talos-systems/talos/pkg/machinery/client"
 )
 
-var (
+var upgradeCmdFlags struct {
 	upgradeImage string
 	preserve     bool
 	stage        bool
-)
+	force        bool
+	noWait       bool
+	debug        bool
+}
 
 // upgradeCmd represents the processes command.
 var upgradeCmd = &cobra.Command{
@@ -32,25 +35,42 @@ var upgradeCmd = &cobra.Command{
 	Long:  ``,
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return upgrade()
+		if upgradeCmdFlags.debug {
+			upgradeCmdFlags.noWait = false
+		}
+
+		if upgradeCmdFlags.noWait {
+			return runUpgradeNoWait()
+		}
+
+		postCheckFn := func(ctx context.Context, c *client.Client) error {
+			_, err := c.Disks(ctx)
+
+			return err
+		}
+
+		err := newActionTracker(machineReadyEventFn, upgradeGetActorID, postCheckFn, upgradeCmdFlags.debug).run()
+		if err != nil {
+			os.Exit(1)
+		}
+
+		return err
 	},
 }
 
-func init() {
-	upgradeCmd.Flags().StringVarP(&upgradeImage, "image", "i", "", "the container image to use for performing the install")
-	upgradeCmd.Flags().BoolVarP(&preserve, "preserve", "p", false, "preserve data")
-	upgradeCmd.Flags().BoolVarP(&stage, "stage", "s", false, "stage the upgrade to perform it after a reboot")
-	upgradeCmd.Flags().BoolVarP(&force, "force", "f", false, "force the upgrade (skip checks on etcd health and members, might lead to data loss)")
-	addCommand(upgradeCmd)
-}
-
-func upgrade() error {
+func runUpgradeNoWait() error {
 	return WithClient(func(ctx context.Context, c *client.Client) error {
 		var remotePeer peer.Peer
 
-		// TODO: See if we can validate version and prevent starting upgrades to
-		// an unknown version
-		resp, err := c.Upgrade(ctx, upgradeImage, preserve, stage, force, grpc.Peer(&remotePeer))
+		// TODO: See if we can validate version and prevent starting upgrades to an unknown version
+		resp, err := c.Upgrade(
+			ctx,
+			upgradeCmdFlags.upgradeImage,
+			upgradeCmdFlags.preserve,
+			upgradeCmdFlags.stage,
+			force,
+			grpc.Peer(&remotePeer),
+		)
 		if err != nil {
 			if resp == nil {
 				return fmt.Errorf("error performing upgrade: %s", err)
@@ -76,4 +96,33 @@ func upgrade() error {
 
 		return w.Flush()
 	})
+}
+
+func upgradeGetActorID(ctx context.Context, c *client.Client) (string, error) {
+	resp, err := c.Upgrade(
+		ctx,
+		upgradeCmdFlags.upgradeImage,
+		upgradeCmdFlags.preserve,
+		upgradeCmdFlags.stage,
+		force,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	if len(resp.GetMessages()) == 0 {
+		return "", fmt.Errorf("no messages returned from action run")
+	}
+
+	return resp.GetMessages()[0].GetActorId(), nil
+}
+
+func init() {
+	upgradeCmd.Flags().StringVarP(&upgradeCmdFlags.upgradeImage, "image", "i", "", "the container image to use for performing the install")
+	upgradeCmd.Flags().BoolVarP(&upgradeCmdFlags.preserve, "preserve", "p", false, "preserve data")
+	upgradeCmd.Flags().BoolVarP(&upgradeCmdFlags.stage, "stage", "s", false, "stage the upgrade to perform it after a reboot")
+	upgradeCmd.Flags().BoolVarP(&upgradeCmdFlags.force, "force", "f", false, "force the upgrade (skip checks on etcd health and members, might lead to data loss)")
+	upgradeCmd.Flags().BoolVar(&upgradeCmdFlags.noWait, "no-wait", false, "do not wait for the operation to complete, return immediately. always set to false when --debug is set")
+	upgradeCmd.Flags().BoolVar(&upgradeCmdFlags.debug, "debug", false, "debug operation from kernel logs. --no-wait is set to false when this flag is set")
+	addCommand(upgradeCmd)
 }

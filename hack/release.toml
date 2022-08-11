@@ -15,6 +15,14 @@ preface = """\
 
 [notes]
 
+    [notes.track-cli-action-progress]
+        title = "Tracking progress of shutdown, reboot, reset and upgrade from CLI"
+        description = """\
+`talosctl` subcommands `shutdown`, `reboot`, `reset` and `upgrade` now block until the operation is completed, displaying information on the current status of each node.
+A new `--debug` flag is added to these commands to get the kernel logs output from these nodes if the operation fails.
+To have the old fire-and-forget behavior, the new `--no-wait` flag can be used.
+"""
+
     [notes.kubernetes]
         title = "Kubernetes Control Plane labels and taints"
         description = """\
