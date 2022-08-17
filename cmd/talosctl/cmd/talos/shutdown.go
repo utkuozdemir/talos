@@ -11,6 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/talos-systems/talos/cmd/talosctl/cmd/talos/action"
 	"github.com/talos-systems/talos/pkg/machinery/client"
 )
 
@@ -45,7 +46,7 @@ var shutdownCmd = &cobra.Command{
 			})
 		}
 
-		err := newActionTracker(stopAllServicesEventFn, shutdownGetActorID, nil, shutdownCmdFlags.debug).run()
+		err := action.NewTracker(buildCmdCliContext(), action.StopAllServicesEventFn, shutdownGetActorID, nil, shutdownCmdFlags.debug).Run()
 		if err != nil {
 			os.Exit(1)
 		}

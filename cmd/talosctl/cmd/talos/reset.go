@@ -11,6 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/talos-systems/talos/cmd/talosctl/cmd/talos/action"
 	machineapi "github.com/talos-systems/talos/pkg/machinery/api/machine"
 	"github.com/talos-systems/talos/pkg/machinery/client"
 )
@@ -63,7 +64,7 @@ var resetCmd = &cobra.Command{
 			}
 		}
 
-		err := newActionTracker(stopAllServicesEventFn, actionFn, postCheckFn, resetCmdFlags.debug).run()
+		err := action.NewTracker(buildCmdCliContext(), action.StopAllServicesEventFn, actionFn, postCheckFn, resetCmdFlags.debug).Run()
 		if err != nil {
 			os.Exit(1)
 		}

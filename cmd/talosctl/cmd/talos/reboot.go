@@ -11,6 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/talos-systems/talos/cmd/talosctl/cmd/talos/action"
 	"github.com/talos-systems/talos/pkg/machinery/client"
 )
 
@@ -58,7 +59,7 @@ var rebootCmd = &cobra.Command{
 			return err
 		}
 
-		err := newActionTracker(machineReadyEventFn, rebootGetActorID, postCheckFn, rebootCmdFlags.debug).run()
+		err := action.NewTracker(buildCmdCliContext(), action.MachineReadyEventFn, rebootGetActorID, postCheckFn, rebootCmdFlags.debug).Run()
 		if err != nil {
 			os.Exit(1)
 		}

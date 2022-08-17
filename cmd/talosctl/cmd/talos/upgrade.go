@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
 
+	"github.com/talos-systems/talos/cmd/talosctl/cmd/talos/action"
 	"github.com/talos-systems/talos/pkg/cli"
 	"github.com/talos-systems/talos/pkg/machinery/client"
 )
@@ -49,7 +50,7 @@ var upgradeCmd = &cobra.Command{
 			return err
 		}
 
-		err := newActionTracker(machineReadyEventFn, upgradeGetActorID, postCheckFn, upgradeCmdFlags.debug).run()
+		err := action.NewTracker(buildCmdCliContext(), action.MachineReadyEventFn, upgradeGetActorID, postCheckFn, upgradeCmdFlags.debug).Run()
 		if err != nil {
 			os.Exit(1)
 		}
