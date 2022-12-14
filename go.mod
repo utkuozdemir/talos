@@ -3,6 +3,8 @@ module github.com/siderolabs/talos
 go 1.19
 
 replace (
+	github.com/siderolabs/crypto => github.com/utkuozdemir/sidero-crypto v0.0.0-20221214193152-7cf5b222222e
+
 	// Use nested module.
 	github.com/siderolabs/talos/pkg/machinery => ./pkg/machinery
 

@@ -7,6 +7,7 @@ package v1alpha1_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/siderolabs/talos/pkg/machinery/config/types/v1alpha1/generate"
@@ -47,12 +48,19 @@ func TestRedactSecrets(t *testing.T) {
 
 	require.Equal(t, string(configBytesBefore), string(configBytesAfter), "original config is modified")
 
-	require.Equal(t, replacement, redacted.Machine().Security().Token())
-	require.Equal(t, replacement, string(redacted.Machine().Security().CA().Key))
-	require.Equal(t, replacement, redacted.Cluster().Secret())
-	require.Equal(t, "***", redacted.Cluster().Token().Secret())
-	require.Equal(t, "", redacted.Cluster().AESCBCEncryptionSecret())
-	require.Equal(t, replacement, redacted.Cluster().SecretboxEncryptionSecret())
-	require.Equal(t, replacement, string(redacted.Cluster().CA().Key))
-	require.Equal(t, replacement, string(redacted.Cluster().Etcd().CA().Key))
+	assert.Equal(t, replacement, redacted.Machine().Security().Token())
+
+	assert.Empty(t, redacted.Machine().Security().CA().Key)
+	assert.Equal(t, replacement, redacted.Machine().Security().CA().KeyYAMLOverride)
+
+	assert.Equal(t, replacement, redacted.Cluster().Secret())
+	assert.Equal(t, "***", redacted.Cluster().Token().Secret())
+	assert.Equal(t, "", redacted.Cluster().AESCBCEncryptionSecret())
+	assert.Equal(t, replacement, redacted.Cluster().SecretboxEncryptionSecret())
+
+	assert.Empty(t, redacted.Cluster().CA().Key)
+	assert.Equal(t, replacement, redacted.Cluster().CA().KeyYAMLOverride)
+
+	assert.Empty(t, redacted.Cluster().Etcd().CA().Key)
+	assert.Equal(t, replacement, redacted.Cluster().Etcd().CA().KeyYAMLOverride)
 }

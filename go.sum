@@ -1007,8 +1007,6 @@ github.com/sergi/go-diff v1.1.0 h1:we8PVUC3FE2uYfodKH/nBHMSetSfHDR6scGdBi+erh0=
 github.com/sethgrid/pester v0.0.0-20190127155807-68a33a018ad0 h1:X9XMOYjxEfAYSy3xK1DzO5dMkkWhs9E9UCcS1IERx2k=
 github.com/sethgrid/pester v0.0.0-20190127155807-68a33a018ad0/go.mod h1:Ad7IjTpvzZO8Fl0vh9AzQ+j/jYZfyp2diGwI8m5q+ns=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
-github.com/siderolabs/crypto v0.4.0 h1:o1KIR1KyevUcY9nbJlSyQAj7+p+rveGGF8LjAAFMtjc=
-github.com/siderolabs/crypto v0.4.0/go.mod h1:itZpBsJ9i0aH8jiHAuSlKCal7hni7X1aDYo6vGVl5LY=
 github.com/siderolabs/discovery-api v0.1.1 h1:DI+CjD/Nl0nIk8qkaNKz1sEquWTEKHKH4+ERsv+yBWg=
 github.com/siderolabs/discovery-api v0.1.1/go.mod h1:JnJg4h1HbAhOazQl0lYHEjrg63rg/cf9r2te6/DqUxo=
 github.com/siderolabs/discovery-client v0.1.3 h1:DsiH2aiObxHGJISLXxih4q+NmSixUzxRegNjLlRC8s4=
@@ -1137,6 +1135,8 @@ github.com/urfave/cli v0.0.0-20171014202726-7bc6a0acffa5/go.mod h1:70zkFmudgCuE/
 github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/urfave/cli v1.22.2/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
+github.com/utkuozdemir/sidero-crypto v0.0.0-20221214193152-7cf5b222222e h1:/Wkw/0HptFeM0la2aThdokICJh276hTbjMoAVYFirp8=
+github.com/utkuozdemir/sidero-crypto v0.0.0-20221214193152-7cf5b222222e/go.mod h1:itZpBsJ9i0aH8jiHAuSlKCal7hni7X1aDYo6vGVl5LY=
 github.com/vishvananda/netlink v0.0.0-20181108222139-023a6dafdcdf/go.mod h1:+SR5DhBJrl6ZM7CoCKvpw5BKroDKQ+PJqOg65H/2ktk=
 github.com/vishvananda/netlink v1.1.0/go.mod h1:cTgwzPIzzgDAYoQrMm0EdrjRUBkTqKYppBueQtXaqoE=
 github.com/vishvananda/netlink v1.1.1-0.20201029203352-d40f9887b852/go.mod h1:twkDnbuQxJYemMlGd4JFIcuhgX83tXhKS2B/PRMpOho=

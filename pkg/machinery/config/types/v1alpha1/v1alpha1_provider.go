@@ -125,7 +125,8 @@ func (c *Config) RedactSecrets(replacement string) config.Provider {
 	if clone.MachineConfig != nil {
 		clone.MachineConfig.MachineToken = redactStr(clone.MachineConfig.MachineToken)
 		if clone.MachineConfig.MachineCA != nil {
-			clone.MachineConfig.MachineCA.Key = redactBytes(clone.MachineConfig.MachineCA.Key)
+			clone.MachineConfig.MachineCA.KeyYAMLOverride = string(redactBytes(clone.MachineConfig.MachineCA.Key))
+			clone.MachineConfig.MachineCA.Key = nil
 		}
 	}
 
@@ -136,15 +137,18 @@ func (c *Config) RedactSecrets(replacement string) config.Provider {
 		clone.ClusterConfig.ClusterSecretboxEncryptionSecret = redactStr(clone.ClusterConfig.ClusterSecretboxEncryptionSecret)
 
 		if clone.ClusterConfig.ClusterCA != nil {
-			clone.ClusterConfig.ClusterCA.Key = redactBytes(clone.ClusterConfig.ClusterCA.Key)
+			clone.ClusterConfig.ClusterCA.KeyYAMLOverride = string(redactBytes(clone.ClusterConfig.ClusterCA.Key))
+			clone.ClusterConfig.ClusterCA.Key = nil
 		}
 
 		if clone.ClusterConfig.ClusterAggregatorCA != nil {
-			clone.ClusterConfig.ClusterAggregatorCA.Key = redactBytes(clone.ClusterConfig.ClusterAggregatorCA.Key)
+			clone.ClusterConfig.ClusterAggregatorCA.KeyYAMLOverride = string(redactBytes(clone.ClusterConfig.ClusterAggregatorCA.Key))
+			clone.ClusterConfig.ClusterAggregatorCA.Key = nil
 		}
 
 		if clone.ClusterConfig.EtcdConfig != nil && clone.ClusterConfig.EtcdConfig.RootCA != nil {
-			clone.ClusterConfig.EtcdConfig.RootCA.Key = redactBytes(clone.ClusterConfig.EtcdConfig.RootCA.Key)
+			clone.ClusterConfig.EtcdConfig.RootCA.KeyYAMLOverride = string(redactBytes(clone.ClusterConfig.EtcdConfig.RootCA.Key))
+			clone.ClusterConfig.EtcdConfig.RootCA.Key = nil
 		}
 	}
 
