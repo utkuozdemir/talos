@@ -308,7 +308,7 @@ func launchVM(config *LaunchConfig) error {
 		"-cpu", cpuArg,
 		"-nographic",
 		"-netdev", fmt.Sprintf("tap,id=net0,ifname=%s,script=no,downscript=no", config.tapName),
-		"-device", fmt.Sprintf("virtio-net-pci,netdev=net0,mac=%s", config.vmMAC),
+		"-device", fmt.Sprintf("e1000,netdev=net0,mac=%s", config.vmMAC),
 		// TODO: uncomment the following line to get another eth interface not connected to anything
 		// "-nic", "tap,model=virtio-net-pci",
 		"-device", "virtio-rng-pci",
