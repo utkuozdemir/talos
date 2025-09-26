@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math"
 	"net"
 	"os"
@@ -33,6 +34,8 @@ import (
 
 //nolint:gocyclo,cyclop
 func (p *provisioner) createNode(state *vm.State, clusterReq provision.ClusterRequest, nodeReq provision.NodeRequest, opts *provision.Options) (provision.NodeInfo, error) {
+	log.Printf("CREATE NODE: %#v", nodeReq)
+
 	arch := Arch(opts.TargetArch)
 	pidPath := state.GetRelativePath(fmt.Sprintf("%s.pid", nodeReq.Name))
 
@@ -237,6 +240,8 @@ func (p *provisioner) createNode(state *vm.State, clusterReq provision.ClusterRe
 	if err != nil {
 		return provision.NodeInfo{}, err
 	}
+
+	log.Printf("LAUNCH CONFIG FILE PATH: %s", state.GetRelativePath(fmt.Sprintf("%s.config", nodeReq.Name)))
 
 	if err = json.NewEncoder(launchConfigFile).Encode(&launchConfig); err != nil {
 		return provision.NodeInfo{}, err
