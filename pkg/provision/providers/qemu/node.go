@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math"
 	"net"
 	"os"
@@ -34,6 +35,8 @@ import (
 
 //nolint:gocyclo,cyclop
 func (p *provisioner) createNode(ctx context.Context, state *vm.State, clusterReq provision.ClusterRequest, nodeReq provision.NodeRequest, opts *provision.Options) (provision.NodeInfo, error) {
+	log.Printf("CREATE NODE REQ: %+v", nodeReq)
+
 	arch := Arch(opts.TargetArch)
 	pidPath := state.GetRelativePath(fmt.Sprintf("%s.pid", nodeReq.Name))
 
@@ -74,6 +77,8 @@ func (p *provisioner) createNode(ctx context.Context, state *vm.State, clusterRe
 
 	cmdline.SetAll(kernel.DefaultArgs(nodeReq.Quirks))
 
+	log.Printf("DEFAULT KERNEL ARGS: %s", cmdline.String())
+
 	// required to get kernel console
 	cmdline.Append("console", arch.Console())
 
@@ -104,6 +109,8 @@ func (p *provisioner) createNode(ctx context.Context, state *vm.State, clusterRe
 		extraISOPath string
 	)
 
+	log.Printf("SKIP INJECTING CONFIG: %v", nodeReq.SkipInjectingConfig)
+
 	if !nodeReq.SkipInjectingConfig {
 		nodeConfig, err = nodeReq.Config.EncodeString()
 		if err != nil {
@@ -132,6 +139,8 @@ func (p *provisioner) createNode(ctx context.Context, state *vm.State, clusterRe
 	if err != nil {
 		return provision.NodeInfo{}, fmt.Errorf("error finding listen address for the API: %w", err)
 	}
+
+	log.Printf("API BIND ADDR: %+v", apiBind)
 
 	defaultBootOrder := "cd"
 	if nodeReq.DefaultBootOrder != "" {
@@ -238,6 +247,8 @@ func (p *provisioner) createNode(ctx context.Context, state *vm.State, clusterRe
 	if err != nil {
 		return provision.NodeInfo{}, err
 	}
+
+	log.Printf("LAUNCH CONFIG FILE PATH: %s", state.GetRelativePath(fmt.Sprintf("%s.config", nodeReq.Name)))
 
 	if err = json.NewEncoder(launchConfigFile).Encode(&launchConfig); err != nil {
 		return provision.NodeInfo{}, err

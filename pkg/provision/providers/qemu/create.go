@@ -38,6 +38,7 @@ func (p *provisioner) Create(ctx context.Context, request provision.ClusterReque
 	statePath := filepath.Join(request.StateDirectory, request.Name)
 
 	fmt.Fprintf(options.LogWriter, "creating state directory in %q\n", statePath)
+	fmt.Fprintf(options.LogWriter, "2222\n")
 
 	state, err := vm.NewState(
 		statePath,
